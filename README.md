@@ -12,7 +12,9 @@
 - Damage per second
 - EXTRA: Combo
   - Combo system tracks hits and total damage until you stop and don't hit anything for two seconds
-  - Inspired by LookingGlass mod from Risk of Rain 2
+
  
 ### Screenshot
 <img width="1919" height="1079" alt="imagen" src="https://github.com/user-attachments/assets/2d3dc240-be2c-4d8e-a59f-7a41d0ae6ca5" />
+
+Inspired by LookingGlass mod from Risk of Rain 2
