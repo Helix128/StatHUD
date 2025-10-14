@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <AssemblyName>StatHUD</AssemblyName>
+    <Product>StatHUD</Product>
+    <Version>1.0.0</Version>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>latest</LangVersion>
+    <RestoreAdditionalProjectSources>
+      https://api.nuget.org/v3/index.json;
+      https://nuget.bepinex.dev/v3/index.json;
+      https://nuget.samboy.dev/v3/index.json
+    </RestoreAdditionalProjectSources>
+    <RootNamespace>StatsHUD</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BepInEx.Unity.IL2CPP" Version="6.0.0-be.*" IncludeAssets="compile" />
+    <PackageReference Include="BepInEx.PluginInfoProps" Version="2.*" />
+    <Reference Include="UnityEngine"><Private>False</Private></Reference>
+    <Reference Include="UnityEngine.CoreModule"><Private>False</Private></Reference>
+    <Reference Include="Il2Cppmscorlib"><Private>False</Private></Reference>
+    <Reference Include="UnityEngine.UI"><Private>False</Private></Reference>
+    <Reference Include="UnityEngine.UIModule"><Private>False</Private></Reference>
+    <Reference Include="UnityEngine.IMGUIModule"><Private>False</Private></Reference>
+    <Reference Include="Assembly-CSharp"><Private>False</Private></Reference>
+    <Reference Include="UnityEngine.TextRenderingModule"><Private>False</Private></Reference>
+    <Reference Include="UnityEngine.InputLegacyModule"><Private>False</Private></Reference>
+    <Reference Include="UnityEngine.ImageConversionModule"><Private>False</Private></Reference>
+  </ItemGroup>
+</Project>
