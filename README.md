@@ -1,5 +1,5 @@
 # StatHUD
-## In-game DPS and other misc stats display
+## In-game DPS and misc stats display
 
 ### Displayed stats
 
