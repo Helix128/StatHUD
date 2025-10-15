@@ -33,7 +33,7 @@ namespace FoxUI
             Plugin.Log.LogInfo($"Creating panel: {name} at {position} with size {size}");
 
             Image panel = new GameObject(name).AddComponent<Image>();
-
+ 
             panel.rectTransform.anchoredPosition = position;
             panel.rectTransform.sizeDelta = size;
 
