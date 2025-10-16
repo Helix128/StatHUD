@@ -9,8 +9,17 @@ namespace FoxUI
     public class UIBuilder : MonoBehaviour
     {
         public static Canvas canvas;
+        public static UIBuilder Instance;
         public void Start()
-        {
+        {   
+            if(Instance != null)
+            {
+                Plugin.Log.LogWarning("Multiple UIBuilder instances detected! Destroying duplicate");
+                Destroy(this);
+                return;
+            }
+            Instance = this;
+
             Plugin.Log.LogInfo("UIBuilder initialized.");
 
             GameObject canvasGo = new GameObject("FoxUI");

@@ -26,6 +26,7 @@ public class DPSModule
         public static void Postfix(DamageContainer dc)
         {
             AddDamageInstance(dc);
+            lastRefresh = TimeModule.GetTime();
         }
     }
 
