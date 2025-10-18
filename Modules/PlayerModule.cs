@@ -22,9 +22,14 @@ public class PlayerModule
     public static List<Tuple<float, float>> xpHistory = new List<Tuple<float, float>>();
     public static List<Tuple<float, float>> goldHistory = new List<Tuple<float, float>>();
 
+    public static MyPlayer GetPlayer()
+    {
+        return MyPlayer.Instance;
+    }
+
     public static void RecalculateStats()
     {
-        MyPlayer player = MyPlayer.Instance;
+        MyPlayer player = GetPlayer();
 
         if (player == null)
         {

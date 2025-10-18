@@ -2,7 +2,7 @@ using UnityEngine;
 using StatsHUD;
 using System.Linq;
 
-namespace FoxUI
+namespace FoxLib
 {
     public class AssetManager : MonoBehaviour
     {
@@ -46,7 +46,7 @@ namespace FoxUI
 
         public void Start()
         {
-            Plugin.Log.LogInfo("AssetManager initialized.");
+            Plugin.Log.LogInfo("FoxUIAssetManager initialized.");
         }   
         
     }

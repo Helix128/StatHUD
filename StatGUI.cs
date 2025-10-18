@@ -1,7 +1,7 @@
 
 using System;
 using System.Runtime.InteropServices;
-using FoxUI;
+using FoxLib.UI;
 using HarmonyLib;
 using Il2CppInterop.Runtime.Injection;
 using Il2CppInterop.Runtime.Runtime;
@@ -52,10 +52,17 @@ class StatGUI : MonoBehaviour
     }
 
     // Data text
+    // resources
     public Text xpText;
     public Text xpSecText;
     public Text goldText;
     public Text goldSecText;
+
+    // enemies
+    public Text minDamageText;
+    public Text maxDamageText;
+
+    // damage
     public Text dpsText;
 
     public static Vector2 TargetPosition = new Vector2(800, -70);
@@ -64,7 +71,7 @@ class StatGUI : MonoBehaviour
     {
         if (isCreated) { return; }
 
-        mainPanel = UIBuilder.CreatePanel(TargetPosition, new Vector2(300, 200), "Main Panel");
+        mainPanel = UIBuilder.CreatePanel(TargetPosition, new Vector2(300, 300), "StatHUD Panel");
 
         var layoutGroup = mainPanel.gameObject.AddComponent<VerticalLayoutGroup>();
         layoutGroup.childAlignment = TextAnchor.MiddleLeft;
@@ -84,6 +91,11 @@ class StatGUI : MonoBehaviour
         goldText.transform.SetParent(mainPanel.transform, false);
         goldSecText = UIBuilder.CreateText(Vector2.zero, new Vector2(380, 72), "Gold/s: 50", 24, "GoldSecText");
         goldSecText.transform.SetParent(mainPanel.transform, false);
+
+        minDamageText = UIBuilder.CreateText(Vector2.zero, new Vector2(380, 72), "Min Foe Damage: 100", 24, "MinDamageText");
+        minDamageText.transform.SetParent(mainPanel.transform, false);
+        maxDamageText = UIBuilder.CreateText(Vector2.zero, new Vector2(380, 72), "Max Foe Damage: 200", 24, "MaxDamageText");
+        maxDamageText.transform.SetParent(mainPanel.transform, false);
 
         dpsText = UIBuilder.CreateText(Vector2.zero, new Vector2(380, 72), "DPS: 200", 24, "DPSText");
         dpsText.transform.SetParent(mainPanel.transform, false);
@@ -114,6 +126,7 @@ class StatGUI : MonoBehaviour
         DPSModule.Reset();
         PlayerModule.Reset();
         TimeModule.Reset();
+        EnemyModule.Reset();
     }
 
     void UpdateGUI()
@@ -143,6 +156,8 @@ class StatGUI : MonoBehaviour
         UIBuilder.SetText(xpSecText, $"XP/s: {PlayerModule.GetXpSec():0}");
         UIBuilder.SetText(goldText, $"Gold: {PlayerModule.GetGold():0}");
         UIBuilder.SetText(goldSecText, $"Gold/s: {PlayerModule.GetGoldSec():0}");
+        UIBuilder.SetText(minDamageText, $"Min Foe Damage: {EnemyModule.MinDamage:0}");
+        UIBuilder.SetText(maxDamageText, $"Max Foe Damage: {EnemyModule.MaxDamage:0}");
         UIBuilder.SetText(dpsText, $"DPS: {DPSModule.GetDPS():0.0}");
     }
     

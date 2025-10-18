@@ -4,7 +4,7 @@ using StatsHUD;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace FoxUI
+namespace FoxLib.UI
 {
     public class UIBuilder : MonoBehaviour
     {
@@ -14,15 +14,15 @@ namespace FoxUI
         {   
             if(Instance != null)
             {
-                Plugin.Log.LogWarning("Multiple UIBuilder instances detected! Destroying duplicate");
+                Plugin.Log.LogWarning("Multiple UI Builder instances detected! Destroying duplicate");
                 Destroy(this);
                 return;
             }
             Instance = this;
 
-            Plugin.Log.LogInfo("UIBuilder initialized.");
+            Plugin.Log.LogInfo("FoxLib UI Builder initialized.");
 
-            GameObject canvasGo = new GameObject("FoxUI");
+            GameObject canvasGo = new GameObject("FoxLib UI");
             DontDestroyOnLoad(canvasGo);
             canvas = canvasGo.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
@@ -34,7 +34,7 @@ namespace FoxUI
 
             canvasGo.AddComponent<GraphicRaycaster>();
 
-            Plugin.Log.LogInfo("FoxUI canvas created.");
+            Plugin.Log.LogInfo("FoxLib UI canvas created.");
         }
 
         public static Image CreatePanel(Vector2 position, Vector2 size, string name = "Panel")
@@ -81,9 +81,26 @@ namespace FoxUI
 
         public static void SetText(Text text, string content)
         {
-            if(text.text != content)
+            if (text.text != content)
             {
                 text.text = content;
+            }
+        }
+
+        public static void SetColor(Text text, Color color)
+        {
+            if (text.color != color)
+            {
+                text.color = color;
+            }
+        }
+
+        public static void SetColor(Text text, float r = 1.0f, float g = 1.0f, float b = 1.0f, float a = 1f)
+        {
+            Color color = new Color(r, g, b, a);
+            if (text.color != color)
+            {
+                text.color = color;
             }
         }
     }

@@ -3,9 +3,10 @@ using BepInEx;
 using BepInEx.Logging;
 using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
-using FoxUI;
+using FoxLib;
 using Il2CppInterop.Runtime.Injection;
 using UnityEngine;
+using FoxLib.UI;
 
 namespace StatsHUD;
 
@@ -22,19 +23,11 @@ public class Plugin : BasePlugin
 
         _harmony = new Harmony(MyPluginInfo.PLUGIN_GUID);
         _harmony.PatchAll();
-        
-        ClassInjector.RegisterTypeInIl2Cpp<AssetManager>();
-        var assetManager = new GameObject("AssetManager");
-        assetManager.AddComponent<AssetManager>();
-        Object.DontDestroyOnLoad(assetManager);
 
-        ClassInjector.RegisterTypeInIl2Cpp<UIBuilder>();
-        var uiBuilder = new GameObject("UIBuilder");
-        uiBuilder.AddComponent<UIBuilder>();
-        Object.DontDestroyOnLoad(uiBuilder);
+        FoxUI.Initialize();
 
         ClassInjector.RegisterTypeInIl2Cpp<StatGUI>();
-        var statGUI = new GameObject("StatGUI");
+        var statGUI = new GameObject("StatHUD");
         statGUI.AddComponent<StatGUI>();
         Object.DontDestroyOnLoad(statGUI);
     }
