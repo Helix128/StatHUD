@@ -1,5 +1,5 @@
 # StatHUD
-## In-game DPS and misc stats display
+## In-game DPS and misc stats display for Megabonk
 
 ### Displayed stats
 
