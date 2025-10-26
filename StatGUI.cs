@@ -44,6 +44,7 @@ class StatGUI : MonoBehaviour
         if (lastScene == 2)
         {
             TimeModule.Update();
+            EnemyModule.Update();
         }
         if (isCreated)
         {

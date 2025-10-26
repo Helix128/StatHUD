@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Assets.Scripts.Actors;
 using Assets.Scripts.Actors.Enemies;
@@ -18,7 +19,9 @@ using UnityEngine;
 
 public class EnemyModule
 {
-    public static List<Enemy> enemies = new List<Enemy>();
+    public static Dictionary<Enemy, float> enemyDamages = new Dictionary<Enemy, float>();
+    public static bool isDirty = false;
+    public static float lastRecalcTime = 0;
 
     [HarmonyPatch(typeof(Enemy))]
     [HarmonyPatch(nameof(Enemy.InitEnemy))]
@@ -26,8 +29,13 @@ public class EnemyModule
     {
         public static void Postfix(Enemy __instance)
         {
-            enemies.Add(__instance);
-            RecalculateDamage();
+            float baseDamage = __instance.GetBasePlayerDamage();
+
+            bool added = enemyDamages.TryAdd(__instance, baseDamage);
+            if (added)
+            {
+                isDirty = true;
+            }
         }
     }
 
@@ -37,8 +45,8 @@ public class EnemyModule
     {
         public static void Prefix(Enemy __instance)
         {
-            enemies.Remove(__instance);
-            RecalculateDamage();
+            enemyDamages.Remove(__instance);
+            isDirty = true;
         }
     }
 
@@ -47,43 +55,43 @@ public class EnemyModule
 
     public static void RecalculateDamage()
     {
-        if (enemies.Count == 0)
+        if (enemyDamages.Count == 0)
         {
             MinDamage = 0;
             MaxDamage = 0;
+            isDirty = false;
             return;
         }
 
         CombatScaling.GetDamageMultiplierAddition(out float baseAdd, out float swarmAdd, out float stageAdd);
         float factor = 1 + baseAdd + swarmAdd + stageAdd;
 
-        float firstDamage = enemies[0].GetBasePlayerDamage() * factor;
+        var allBaseDamages = enemyDamages.Values;
 
-        float min = firstDamage;
-        float max = firstDamage;
-        
-        for (int i = 1; i < enemies.Count; i++)
-        {
-            float damage = enemies[i].GetBasePlayerDamage() * factor;
-            if (damage < min)
-            {
-                min = damage;
-            }
-            if (damage > max)
-            {
-                max = damage;
-            }
-        }
+        float minBase = allBaseDamages.Min();
+        float maxBase = allBaseDamages.Max();
 
-        MinDamage = min;
-        MaxDamage = max;
+        MinDamage = minBase * factor;
+        MaxDamage = maxBase * factor;
+
+        isDirty = false;
     }
 
+    public const float RECALC_THROTTLE = 0.5f;
+    public static void Update()
+    {
+        if (isDirty && (Time.time - lastRecalcTime > RECALC_THROTTLE))
+        {
+            RecalculateDamage();
+            lastRecalcTime = Time.time;
+        }
+    }
     public static void Reset()
     {
-        enemies.Clear();
+        enemyDamages.Clear();
         MinDamage = 0;
         MaxDamage = 0;
+        isDirty = false;
     }
 }
 
