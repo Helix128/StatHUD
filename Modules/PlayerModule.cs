@@ -45,7 +45,7 @@ public class PlayerModule
         float lastXp = Xp;
         float lastGold = Gold;
 
-        Xp = player.inventory.playerXp.xp;
+        Xp = player.inventory.playerXp.GetXpInt();
         Gold = player.inventory.gold;
         MaxXp = XpUtility.XpTotalNextLevel(player.inventory.playerXp.xp);
         XpPct = (MaxXp > 0) ? (Xp / MaxXp) * 100.0f : 0;

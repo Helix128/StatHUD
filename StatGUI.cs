@@ -102,9 +102,9 @@ class StatGUI : MonoBehaviour
         goldSecText = UIBuilder.CreateText(Vector2.zero, new Vector2(380, 72), "Gold/s: 0", 24, "GoldSecText");
         goldSecText.transform.SetParent(mainPanel.transform, false);
 
-        minDamageText = UIBuilder.CreateText(Vector2.zero, new Vector2(380, 72), "Min Foe Damage: 0", 24, "MinDamageText");
+        minDamageText = UIBuilder.CreateText(Vector2.zero, new Vector2(380, 72), "Min, Foe Dmg: 0", 24, "MinDamageText");
         minDamageText.transform.SetParent(mainPanel.transform, false);
-        maxDamageText = UIBuilder.CreateText(Vector2.zero, new Vector2(380, 72), "Max Foe Damage: 0", 24, "MaxDamageText");
+        maxDamageText = UIBuilder.CreateText(Vector2.zero, new Vector2(380, 72), "Max, Foe Dmg: 0", 24, "MaxDamageText");
         maxDamageText.transform.SetParent(mainPanel.transform, false);
 
         dpsText = UIBuilder.CreateText(Vector2.zero, new Vector2(380, 72), "DPS: 0", 24, "DPSText");
@@ -204,24 +204,28 @@ class StatGUI : MonoBehaviour
             _lastMaxDmg = curMaxDmg;
 
             var player = PlayerModule.GetPlayer();
-            if (player)
+            if (player != null)
             {
-                if (player.inventory.playerHealth.WillDamageKill(EnemyModule.MinDamage, false))
+                if (player.inventory != null)
                 {
-                    UIBuilder.SetColor(minDamageText, Color.red);
-                }
-                else
-                {
-                    UIBuilder.SetColor(minDamageText, Color.white);
-                }
+                    
+                    if (player.inventory.playerHealth.WillDamageKill(EnemyModule.MinDamage, false))
+                    {
+                        UIBuilder.SetColor(minDamageText, Color.red);
+                    }
+                    else
+                    {
+                        UIBuilder.SetColor(minDamageText, Color.white);
+                    }
 
-                if (player.inventory.playerHealth.WillDamageKill(EnemyModule.MaxDamage, false))
-                {
-                    UIBuilder.SetColor(maxDamageText, Color.red);
-                }
-                else
-                {
-                    UIBuilder.SetColor(maxDamageText, Color.white);
+                    if (player.inventory.playerHealth.WillDamageKill(EnemyModule.MaxDamage, false))
+                    {
+                        UIBuilder.SetColor(maxDamageText, Color.red);
+                    }
+                    else
+                    {
+                        UIBuilder.SetColor(maxDamageText, Color.white);
+                    }
                 }
             }
         }
