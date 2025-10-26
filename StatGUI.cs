@@ -67,6 +67,13 @@ class StatGUI : MonoBehaviour
 
     public static Vector2 TargetPosition = new Vector2(800, -70);
     public static bool isVisible;
+
+    private float _lastXp, _lastMaxXp, _lastXpPct;
+    private float _lastGold, _lastGoldSec;
+    private float _lastMinDmg, _lastMaxDmg;
+    private float _lastDps;
+
+    private string _xpString, _goldString, _minDmgString, _maxDmgString, _dpsString;
     void CreateGUI()
     {
         if (isCreated) { return; }
@@ -149,40 +156,81 @@ class StatGUI : MonoBehaviour
             mainPanel.rectTransform.anchoredPosition = new Vector2(TargetPosition.x + 550, TargetPosition.y);
         }
     }
-    
+
     void UpdateGUIText()
     {
-        UIBuilder.SetText(xpText, $"XP: {PlayerModule.GetXp():0}/{PlayerModule.GetMaxXp():0} ({PlayerModule.GetXpPct():0.0}%)");
-        UIBuilder.SetText(xpSecText, $"XP/s: {PlayerModule.GetXpSec():0}");
-        UIBuilder.SetText(goldText, $"Gold: {PlayerModule.GetGold():0}");
-        UIBuilder.SetText(goldSecText, $"Gold/s: {PlayerModule.GetGoldSec():0}");
+        float curXp = PlayerModule.GetXp();
+        float curMaxXp = PlayerModule.GetMaxXp();
+        float curXpPct = PlayerModule.GetXpPct();
 
-        UIBuilder.SetText(minDamageText, $"Min. Foe Dmg: {EnemyModule.MinDamage:0}");
-        UIBuilder.SetText(maxDamageText, $"Max. Foe Dmg: {EnemyModule.MaxDamage:0}");
-
-        var player = PlayerModule.GetPlayer();
-        if (player)
+        if (curXp != _lastXp || curMaxXp != _lastMaxXp || curXpPct != _lastXpPct)
         {
-            if (player.inventory.playerHealth.WillDamageKill(EnemyModule.MinDamage, false))
+            _xpString = $"XP: {curXp.ToString("F0")}/{curMaxXp.ToString("F0")} ({curXpPct.ToString("F1")}%)";
+            UIBuilder.SetText(xpText, _xpString);
+
+            _lastXp = curXp;
+            _lastMaxXp = curMaxXp;
+            _lastXpPct = curXpPct;
+        }
+
+        float curGold = PlayerModule.GetGold();
+        float curGoldSec = PlayerModule.GetGoldSec();
+        if (curGold != _lastGold || curGoldSec != _lastGoldSec)
+        {
+            _goldString = $"Gold: {curGold.ToString("F0")}";
+            UIBuilder.SetText(goldText, _goldString);
+
+            _goldString = $"Gold/s: {curGoldSec.ToString("F0")}"; 
+            UIBuilder.SetText(goldSecText, _goldString);
+
+            _lastGold = curGold;
+            _lastGoldSec = curGoldSec;
+        }
+        
+        float curMinDmg = EnemyModule.MinDamage;
+        float curMaxDmg = EnemyModule.MaxDamage;
+        if (curMinDmg != _lastMinDmg || curMaxDmg != _lastMaxDmg)
+        {
+            _minDmgString = $"Min. Foe Dmg: {curMinDmg.ToString("F0")}";
+            UIBuilder.SetText(minDamageText, _minDmgString);
+
+            _maxDmgString = $"Max. Foe Dmg: {curMaxDmg.ToString("F0")}";
+            UIBuilder.SetText(maxDamageText, _maxDmgString);
+
+            _lastMinDmg = curMinDmg;
+            _lastMaxDmg = curMaxDmg;
+
+            var player = PlayerModule.GetPlayer();
+            if (player)
             {
-                UIBuilder.SetColor(minDamageText, Color.red);
-            }
-            else
-            {
-                UIBuilder.SetColor(minDamageText, Color.white);
-            }
-            
-            if (player.inventory.playerHealth.WillDamageKill(EnemyModule.MaxDamage, false))
-            {
-                UIBuilder.SetColor(maxDamageText, Color.red);
-            }
-            else
-            {
-                UIBuilder.SetColor(maxDamageText, Color.white);
+                if (player.inventory.playerHealth.WillDamageKill(EnemyModule.MinDamage, false))
+                {
+                    UIBuilder.SetColor(minDamageText, Color.red);
+                }
+                else
+                {
+                    UIBuilder.SetColor(minDamageText, Color.white);
+                }
+
+                if (player.inventory.playerHealth.WillDamageKill(EnemyModule.MaxDamage, false))
+                {
+                    UIBuilder.SetColor(maxDamageText, Color.red);
+                }
+                else
+                {
+                    UIBuilder.SetColor(maxDamageText, Color.white);
+                }
             }
         }
 
-        UIBuilder.SetText(dpsText, $"DPS: {DPSModule.GetDPS():0.0}");
+
+        float curDps = DPSModule.GetDPS();
+        if (curDps != _lastDps)
+        {
+            _dpsString = $"DPS: {curDps.ToString("F1")}";
+            UIBuilder.SetText(dpsText, _dpsString);
+            _lastDps = curDps;
+        }
     }
-    
+
 }
