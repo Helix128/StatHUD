@@ -4,10 +4,11 @@ public class TimeModule
 {
     public static float time;
 
+    public static bool isPaused = false;
     public static void Update()
     {
-        bool pause = !(UiManager.Instance.pause.current == null) && UiManager.Instance.pause.current.activeInHierarchy;
-        if (!pause)
+        isPaused = !(UiManager.Instance.pause.current == null) && UiManager.Instance.pause.current.activeInHierarchy;
+        if (!isPaused)
         {
             time += Time.deltaTime;
         }

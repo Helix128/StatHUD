@@ -45,6 +45,8 @@ class StatGUI : MonoBehaviour
         {
             TimeModule.Update();
             EnemyModule.Update();
+            PlayerModule.Update();
+            DPSModule.Update();
         }
         if (isCreated)
         {

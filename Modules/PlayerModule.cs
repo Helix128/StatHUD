@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections.Generic;
 using Assets.Scripts.Actors.Player;
@@ -7,8 +6,8 @@ using UnityEngine;
 
 public class PlayerModule
 {
-
-    public static float lastRefresh = 0;
+    public static float lastHistoryRefresh = 0;
+    public const float HISTORY_THROTTLE = 0.1f;
     public const float HISTORY_LIFETIME = 1.0f;
 
     public static float MaxXp;
@@ -35,41 +34,53 @@ public class PlayerModule
     public static void RecalculateStats()
     {
         MyPlayer player = GetPlayer();
+        float now = TimeModule.GetTime();
 
-        if (player == null)
+        if (player == null || player.inventory == null || player.inventory.playerXp == null)
         {
-            lastRefresh = TimeModule.GetTime();
-            return;
-        }
-        else if (player.inventory == null || player.inventory.playerXp == null)
-        {
-            lastRefresh = TimeModule.GetTime();
-            return;
-        }
-
-        if (TimeModule.GetTime() - lastRefresh < 0.1f)
-        {
+            Reset();
             return;
         }
 
         float lastXp = Xp;
         float lastGold = Gold;
-        Xp = player.inventory.playerXp.xp;
-        MaxXp = XpUtility.XpTotalNextLevel(player.inventory.playerXp.xp);
-        Gold = player.inventory.gold;
 
-        xpHistory.RemoveAll(t => TimeModule.GetTime() - t.Time > HISTORY_LIFETIME);
+        Xp = player.inventory.playerXp.xp;
+        Gold = player.inventory.gold;
+        MaxXp = XpUtility.XpTotalNextLevel(player.inventory.playerXp.xp);
+        XpPct = (MaxXp > 0) ? (Xp / MaxXp) * 100.0f : 0;
+
         if (Xp > lastXp)
         {
-            xpHistory.Add(new HistoryEntry { Time = TimeModule.GetTime(), Value = Xp - lastXp });
+            xpHistory.Add(new HistoryEntry { Time = now, Value = Xp - lastXp });
         }
-
-        goldHistory.RemoveAll(t => TimeModule.GetTime() - t.Time > HISTORY_LIFETIME);
         if (Gold > lastGold)
         {
-            goldHistory.Add(new HistoryEntry { Time = TimeModule.GetTime(), Value = Gold - lastGold });
+            goldHistory.Add(new HistoryEntry { Time = now, Value = Gold - lastGold });
         }
 
+        if (now - lastHistoryRefresh < HISTORY_THROTTLE)
+        {
+            return; 
+        }
+        
+        lastHistoryRefresh = now;
+
+        for (int i = xpHistory.Count - 1; i >= 0; i--)
+        {
+            if (now - xpHistory[i].Time > HISTORY_LIFETIME)
+            {
+                xpHistory.RemoveAt(i);
+            }
+        }
+        
+        for (int i = goldHistory.Count - 1; i >= 0; i--)
+        {
+            if (now - goldHistory[i].Time > HISTORY_LIFETIME)
+            {
+                goldHistory.RemoveAt(i);
+            }
+        }
         XpSec = 0;
         for (int i = 0; i < xpHistory.Count; i++)
         {
@@ -83,50 +94,45 @@ public class PlayerModule
             GoldSec += goldHistory[i].Value;
         }
         GoldSec /= HISTORY_LIFETIME;
-
-        XpPct = (MaxXp > 0) ? (Xp / MaxXp) * 100.0f : 0;
-        lastRefresh = TimeModule.GetTime();
     }
 
-    public static float GetXp()
+    public static void Update()
     {
         RecalculateStats();
+    }
+    public static float GetXp()
+    {
         return Xp;
     }
 
     public static float GetMaxXp()
     {
-        RecalculateStats();
         return MaxXp;
     }
 
     public static float GetXpSec()
     {
-        RecalculateStats();
         return XpSec;
     }
 
     public static float GetXpPct()
     {
-        RecalculateStats();
         return XpPct;
     }
 
     public static float GetGold()
     {
-        RecalculateStats();
         return Gold;
     }
 
     public static float GetGoldSec()
     {
-        RecalculateStats();
         return GoldSec;
     }
 
     public static void Reset()
     {
-        lastRefresh = 0;
+        lastHistoryRefresh = 0; 
         MaxXp = 0;
         Xp = 0;
         XpSec = 0;

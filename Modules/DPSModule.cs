@@ -1,6 +1,4 @@
-
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Assets.Scripts.Actors;
 using Assets.Scripts.Actors.Enemies;
 using HarmonyLib;
@@ -9,10 +7,21 @@ using UnityEngine;
 
 public class DPSModule
 {
-    public static float DPS = -1;
-    public static float lastRefresh = -1;
-    public const float DMG_INSTANCE_LIFETIME = 1.0f;
+
+    public const float DPS_WINDOW_SECONDS = 3.0f;
+
+    public const float SMOOTHING_FACTOR = 25.0f;
+
+    public const float RECALC_THROTTLE = 0.1f;
+    public const float DISPLAY_THROTTLE = 0.033f;
+
+    private static float rawDPS = 0;
+    private static float displayedDPS = 0;
+
+    private static float lastRecalcTime = -1;
+    private static float lastDisplayTime = -1;
     public static List<DamageInstance> damageInstances = new List<DamageInstance>();
+
     public struct DamageInstance
     {
         public float damage;
@@ -26,7 +35,6 @@ public class DPSModule
         public static void Postfix(DamageContainer dc)
         {
             AddDamageInstance(dc);
-            lastRefresh = TimeModule.GetTime();
         }
     }
 
@@ -40,27 +48,49 @@ public class DPSModule
         damageInstances.Add(instance);
     }
 
-    public static float GetDPS()
+    public static void Update()
+    {
+        float now = TimeModule.GetTime();
+
+        if (TimeModule.isPaused)
+        {
+            lastRecalcTime = -1;
+            lastDisplayTime = -1;
+            return;
+        }   
+        if (now - lastRecalcTime > RECALC_THROTTLE)
+        {
+            RecalculateRawDPS(now);
+            lastRecalcTime = now;
+        }
+
+        if (now - lastDisplayTime > DISPLAY_THROTTLE)
+        {
+            lastDisplayTime = now;
+            displayedDPS = Mathf.Lerp(displayedDPS, rawDPS, Time.deltaTime * SMOOTHING_FACTOR);
+
+            if (displayedDPS < 0.01f)
+            {
+                displayedDPS = 0;
+            }
+        }
+
+    }
+
+    private static void RecalculateRawDPS(float now)
     {
         if (damageInstances.Count == 0)
         {
-            DPS = 0;
-            return DPS;
-        }
-
-        if (TimeModule.GetTime() - lastRefresh < 0.1f)
-        {
-            return DPS;
+            rawDPS = 0;
+            return;
         }
 
         float totalDamage = 0;
-        float now = TimeModule.GetTime();
 
-       for (int i = damageInstances.Count - 1; i >= 0; i--)
+        for (int i = damageInstances.Count - 1; i >= 0; i--)
         {
-            if (now - damageInstances[i].time > DMG_INSTANCE_LIFETIME)
+            if (now - damageInstances[i].time > DPS_WINDOW_SECONDS)
             {
-
                 damageInstances.RemoveAt(i);
             }
             else
@@ -69,18 +99,19 @@ public class DPSModule
             }
         }
 
-        DPS = totalDamage;
-        lastRefresh = now;
-        return DPS;
+        rawDPS = totalDamage / DPS_WINDOW_SECONDS;
+    }
+
+    public static float GetDPS()
+    {
+        return displayedDPS;
     }
 
     public static void Reset()
     {
-        DPS = -1;
-        lastRefresh = -1;
+        rawDPS = 0;
+        displayedDPS = 0;
+        lastRecalcTime = -1;
         damageInstances.Clear();
     }
-
-
-
 }
