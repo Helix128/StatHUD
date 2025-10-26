@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Assets.Scripts.Actors;
 using Assets.Scripts.Actors.Enemies;
 using Assets.Scripts.Actors.Player;
@@ -9,7 +10,9 @@ using Assets.Scripts.Inventory__Items__Pickups.Stats;
 using Assets.Scripts.Managers;
 using Assets.Scripts.Menu.Shop;
 using Assets.Scripts.Utility;
+using BepInEx.Unity.IL2CPP.Utils;
 using HarmonyLib;
+using Il2CppSystem.Threading;
 using StatsHUD;
 using UnityEngine;
 
@@ -41,11 +44,9 @@ public class EnemyModule
 
     public static float MinDamage;
     public static float MaxDamage;
+
     public static void RecalculateDamage()
     {
-        MinDamage = float.MaxValue;
-        MaxDamage = float.MinValue;
-
         if (enemies.Count == 0)
         {
             MinDamage = 0;
@@ -53,18 +54,29 @@ public class EnemyModule
             return;
         }
 
-        foreach (var enemy in enemies)
+        CombatScaling.GetDamageMultiplierAddition(out float baseAdd, out float swarmAdd, out float stageAdd);
+        float factor = 1 + baseAdd + swarmAdd + stageAdd;
+
+        float firstDamage = enemies[0].GetBasePlayerDamage() * factor;
+
+        float min = firstDamage;
+        float max = firstDamage;
+        
+        for (int i = 1; i < enemies.Count; i++)
         {
-            float damage = enemy.GetCurrentDamage();
-            if (damage < MinDamage)
+            float damage = enemies[i].GetBasePlayerDamage() * factor;
+            if (damage < min)
             {
-                MinDamage = damage;
+                min = damage;
             }
-            else if (damage > MaxDamage)
+            if (damage > max)
             {
-                MaxDamage = damage;
+                max = damage;
             }
         }
+
+        MinDamage = min;
+        MaxDamage = max;
     }
 
     public static void Reset()
@@ -77,14 +89,22 @@ public class EnemyModule
 
 public static class EnemyExtensions
 {
-    public static float GetCurrentDamage(this Enemy enemy)
+    public static float GetBasePlayerDamage(this Enemy enemy)
     {
         DamageContainer dc = DamageUtility.GetPlayerDamage(EnemyStats.GetDamage(enemy), 0, Vector3.zero, enemy, "", DcFlags.None);
-        float damage = dc.damage;
+
         dc.damageEffect = EDamageEffect.None;
+
+        return dc.damage;
+    }
+
+    public static float GetCurrentDamage(this Enemy enemy)
+    {
+        float damage = enemy.GetBasePlayerDamage();
 
         CombatScaling.GetDamageMultiplierAddition(out float baseAdd, out float swarmAdd, out float stageAdd);
         float factor = 1 + baseAdd + swarmAdd + stageAdd;
+
         damage *= factor;
         return damage;
     }

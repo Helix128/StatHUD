@@ -156,8 +156,32 @@ class StatGUI : MonoBehaviour
         UIBuilder.SetText(xpSecText, $"XP/s: {PlayerModule.GetXpSec():0}");
         UIBuilder.SetText(goldText, $"Gold: {PlayerModule.GetGold():0}");
         UIBuilder.SetText(goldSecText, $"Gold/s: {PlayerModule.GetGoldSec():0}");
-        UIBuilder.SetText(minDamageText, $"Min Foe Damage: {EnemyModule.MinDamage:0}");
-        UIBuilder.SetText(maxDamageText, $"Max Foe Damage: {EnemyModule.MaxDamage:0}");
+
+        UIBuilder.SetText(minDamageText, $"Min. Foe Dmg: {EnemyModule.MinDamage:0}");
+        UIBuilder.SetText(maxDamageText, $"Max. Foe Dmg: {EnemyModule.MaxDamage:0}");
+
+        var player = PlayerModule.GetPlayer();
+        if (player)
+        {
+            if (player.inventory.playerHealth.WillDamageKill(EnemyModule.MinDamage, false))
+            {
+                UIBuilder.SetColor(minDamageText, Color.red);
+            }
+            else
+            {
+                UIBuilder.SetColor(minDamageText, Color.white);
+            }
+            
+            if (player.inventory.playerHealth.WillDamageKill(EnemyModule.MaxDamage, false))
+            {
+                UIBuilder.SetColor(maxDamageText, Color.red);
+            }
+            else
+            {
+                UIBuilder.SetColor(maxDamageText, Color.white);
+            }
+        }
+
         UIBuilder.SetText(dpsText, $"DPS: {DPSModule.GetDPS():0.0}");
     }
     
