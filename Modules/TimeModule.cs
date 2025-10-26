@@ -7,7 +7,18 @@ public class TimeModule
     public static bool isPaused = false;
     public static void Update()
     {
-        isPaused = !(UiManager.Instance.pause.current == null) && UiManager.Instance.pause.current.activeInHierarchy;
+        if (UiManager.Instance == null)
+        {
+            isPaused = true;
+        }
+        else if (UiManager.Instance.encounterWindows == null || UiManager.Instance.pause == null)
+        {
+            isPaused = false;
+        }
+        else
+        {
+            isPaused = !(UiManager.Instance.pause.current == null) && UiManager.Instance.pause.current.activeInHierarchy || UiManager.Instance.encounterWindows.activeEncounterWindow != null;
+        }
         if (!isPaused)
         {
             time += Time.deltaTime;

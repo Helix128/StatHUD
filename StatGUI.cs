@@ -93,21 +93,21 @@ class StatGUI : MonoBehaviour
         layoutGroup.childForceExpandHeight = false;
 
 
-        xpText = UIBuilder.CreateText(Vector2.zero, new Vector2(380, 72), "XP: 200", 24, "XPText");
+        xpText = UIBuilder.CreateText(Vector2.zero, new Vector2(380, 72), "XP: 0", 24, "XPText");
         xpText.transform.SetParent(mainPanel.transform, false);
-        xpSecText = UIBuilder.CreateText(Vector2.zero, new Vector2(380, 72), "XP/s: 20", 24, "XPSecText");
+        xpSecText = UIBuilder.CreateText(Vector2.zero, new Vector2(380, 72), "XP/s: 0", 24, "XPSecText");
         xpSecText.transform.SetParent(mainPanel.transform, false);
-        goldText = UIBuilder.CreateText(Vector2.zero, new Vector2(380, 72), "Gold: 500", 24, "GoldText");
+        goldText = UIBuilder.CreateText(Vector2.zero, new Vector2(380, 72), "Gold: 0", 24, "GoldText");
         goldText.transform.SetParent(mainPanel.transform, false);
-        goldSecText = UIBuilder.CreateText(Vector2.zero, new Vector2(380, 72), "Gold/s: 50", 24, "GoldSecText");
+        goldSecText = UIBuilder.CreateText(Vector2.zero, new Vector2(380, 72), "Gold/s: 0", 24, "GoldSecText");
         goldSecText.transform.SetParent(mainPanel.transform, false);
 
-        minDamageText = UIBuilder.CreateText(Vector2.zero, new Vector2(380, 72), "Min Foe Damage: 100", 24, "MinDamageText");
+        minDamageText = UIBuilder.CreateText(Vector2.zero, new Vector2(380, 72), "Min Foe Damage: 0", 24, "MinDamageText");
         minDamageText.transform.SetParent(mainPanel.transform, false);
-        maxDamageText = UIBuilder.CreateText(Vector2.zero, new Vector2(380, 72), "Max Foe Damage: 200", 24, "MaxDamageText");
+        maxDamageText = UIBuilder.CreateText(Vector2.zero, new Vector2(380, 72), "Max Foe Damage: 0", 24, "MaxDamageText");
         maxDamageText.transform.SetParent(mainPanel.transform, false);
 
-        dpsText = UIBuilder.CreateText(Vector2.zero, new Vector2(380, 72), "DPS: 200", 24, "DPSText");
+        dpsText = UIBuilder.CreateText(Vector2.zero, new Vector2(380, 72), "DPS: 0", 24, "DPSText");
         dpsText.transform.SetParent(mainPanel.transform, false);
 
         Plugin.Log.LogInfo("StatGUI created.");
