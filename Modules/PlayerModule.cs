@@ -19,8 +19,13 @@ public class PlayerModule
     public static float Gold;
     public static float GoldSec;
 
-    public static List<Tuple<float, float>> xpHistory = new List<Tuple<float, float>>();
-    public static List<Tuple<float, float>> goldHistory = new List<Tuple<float, float>>();
+    public struct HistoryEntry
+    {
+        public float Time;
+        public float Value;
+    }
+    public static List<HistoryEntry> xpHistory = new List<HistoryEntry>();
+    public static List<HistoryEntry> goldHistory = new List<HistoryEntry>();
 
     public static MyPlayer GetPlayer()
     {
@@ -36,7 +41,7 @@ public class PlayerModule
             lastRefresh = TimeModule.GetTime();
             return;
         }
-        else if(player.inventory == null || player.inventory.playerXp == null)
+        else if (player.inventory == null || player.inventory.playerXp == null)
         {
             lastRefresh = TimeModule.GetTime();
             return;
@@ -53,29 +58,29 @@ public class PlayerModule
         MaxXp = XpUtility.XpTotalNextLevel(player.inventory.playerXp.xp);
         Gold = player.inventory.gold;
 
-        xpHistory.RemoveAll(t => TimeModule.GetTime() - t.Item1 > HISTORY_LIFETIME);
+        xpHistory.RemoveAll(t => TimeModule.GetTime() - t.Time > HISTORY_LIFETIME);
         if (Xp > lastXp)
         {
-            xpHistory.Add(new Tuple<float, float>(TimeModule.GetTime(), Xp - lastXp));
+            xpHistory.Add(new HistoryEntry { Time = TimeModule.GetTime(), Value = Xp - lastXp });
         }
 
-        goldHistory.RemoveAll(t => TimeModule.GetTime() - t.Item1 > HISTORY_LIFETIME);
+        goldHistory.RemoveAll(t => TimeModule.GetTime() - t.Time > HISTORY_LIFETIME);
         if (Gold > lastGold)
         {
-            goldHistory.Add(new Tuple<float, float>(TimeModule.GetTime(), Gold - lastGold));
+            goldHistory.Add(new HistoryEntry { Time = TimeModule.GetTime(), Value = Gold - lastGold });
         }
 
         XpSec = 0;
         for (int i = 0; i < xpHistory.Count; i++)
         {
-            XpSec += xpHistory[i].Item2;
+            XpSec += xpHistory[i].Value;
         }
         XpSec /= HISTORY_LIFETIME;
-        
+
         GoldSec = 0;
         for (int i = 0; i < goldHistory.Count; i++)
         {
-            GoldSec += goldHistory[i].Item2;
+            GoldSec += goldHistory[i].Value;
         }
         GoldSec /= HISTORY_LIFETIME;
 

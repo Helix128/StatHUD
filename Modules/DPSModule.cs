@@ -31,7 +31,7 @@ public class DPSModule
     }
 
     public static void AddDamageInstance(DamageContainer dc)
-    {   
+    {
         DamageInstance instance = new DamageInstance
         {
             damage = dc.damage,
@@ -56,10 +56,17 @@ public class DPSModule
         float totalDamage = 0;
         float now = TimeModule.GetTime();
 
-        damageInstances.RemoveAll(di => now - di.time > DMG_INSTANCE_LIFETIME);
-        for (int i = 0; i < damageInstances.Count; i++)
+       for (int i = damageInstances.Count - 1; i >= 0; i--)
         {
-            totalDamage += damageInstances[i].damage;
+            if (now - damageInstances[i].time > DMG_INSTANCE_LIFETIME)
+            {
+
+                damageInstances.RemoveAt(i);
+            }
+            else
+            {
+                totalDamage += damageInstances[i].damage;
+            }
         }
 
         DPS = totalDamage;
@@ -75,5 +82,5 @@ public class DPSModule
     }
 
 
-    
+
 }
